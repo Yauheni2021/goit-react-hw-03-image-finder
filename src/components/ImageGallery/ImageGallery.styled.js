@@ -1,10 +1,14 @@
-import styled from 'styled-components';
-export const ImageGalleryBox = styled.ul`
-  display: grid;
-  max-width: ${p => `calc(100vw - ${p.theme.space[8]}px)`};
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  grid-gap: ${p => `${p.theme.space[5]}px`};
-  margin: ${p => p.theme.space[0]} auto;
-  padding: ${p => p.theme.space[0]};
-  list-style: none;
+import styled from "styled-components";
+
+export const ImageGalleryStyle = styled.ul`
+    display: grid;
+    max-width: calc(100vw - 48px);
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    grid-gap: 16px;
+    margin-top: 0;
+    margin-bottom: 0;
+    padding: 0;
+    list-style: none;
+    margin-left: auto;
+    margin-right: auto;
 `;

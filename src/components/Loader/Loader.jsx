@@ -1,15 +1,27 @@
-import { LoaderStyled } from './Loader.styled';
-import { ThreeCircles } from 'react-loader-spinner';
+import { RotatingLines } from 'react-loader-spinner';
+import { Box } from 'components/Box';
+
 
 export const Loader = () => {
   return (
-    <LoaderStyled>
-      <ThreeCircles
-        color="#3f51b5"
-        height={70}
-        width={70}
-        ariaLabel="three-circles-rotating"
+    <Box
+      display="flex"
+      justifyContent="center"
+      alignItems="center"
+      position="fixed"
+      top="0"
+      left="0"
+      width="100vw"
+      height="100vh"
+      bg="#0000005e"
+    >
+      <RotatingLines
+        strokeColor="grey"
+        strokeWidth="5"
+        animationDuration="0.75"
+        width="96"
+        visible={true}
       />
-    </LoaderStyled>
+    </Box>
   );
 };

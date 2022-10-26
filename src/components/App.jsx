@@ -1,164 +1,147 @@
+import { AppBox } from './App.styled';
 import { Component } from 'react';
-import Notiflix from 'notiflix';
-import { SearchBar } from './Searchbar/Searcbar';
+import { fetchApi } from '../services/getApi';
+import { Searchbar } from './Searchbar/Searcbar';
 import { ImageGallery } from './ImageGallery/ImageGallery';
 import { Loader } from './Loader/Loader';
 import { Button } from './Button/Button';
-import { AppBox } from './App.styled';
+// import { AppBox } from './App.styled';
 import { Modal } from './Modal/Modal';
+import { Notify } from "notiflix";
 
-const URI = 'https://pixabay.com/api/';
-const API_KEY = '27666563-e68b1d227a46c65a42bf27c59'
-
-
-const axios = require('axios').default;
-const notiflixOptions = Notiflix.Notify.init({
-  width: '400px',
-  position: 'top-right',
-  distance: '50px',
-  borderRadius: '10px',
-  clickToClose: true,
-  useIcon: false,
-  fontSize: '23px',
-});
 
 export class App extends Component {
+
   state = {
-    page: 1,
-    queue: '',
-    hits: [],
-    loaderHidden: true,
-    totalHits: 0,
-    isLoading: false,
-    modalHidden: true,
-    modalImg: '',
+        searchQuery: '',
+        page: 1,
+        images: '',
+        loading: false,
+        totalPages: '',
+        showModal: false,
+        modalImage: null,
+        modalImageTags: '',
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    const { searchQuery, page } = this.state;
+    
+    if (prevState.page !== page || prevState.searchQuery !== searchQuery) {
+      this.fetchImages();
+    };
   };
 
-  getRequest = data => {
-    this.setState(prevState => {
-      if (
-        prevState.queue.toLowerCase().trim() ===
-          data.queue.toLowerCase().trim() &&
-        data.queue.toLowerCase().trim() !== ''
-      ) {
-        return Notiflix.Notify.info(
-          `You are already looking for ${this.state.queue}. Change you request.`,
-          notiflixOptions
-        );
-      } else if (data.queue.toLowerCase() === '') {
-        return Notiflix.Notify.info(`Enter some request.`, notiflixOptions);
-      } else {
-        return {
-          page: 1,
-          queue: data.queue,
-          hits: [],
-          totalHits: 0,
-        };
-      }
+  handleSearchQuery = value => {
+
+    const { searchQuery } = this.state;
+
+    if (value === '') {
+      this.setState({ 
+        searchQuery: '', 
+        page: 1, 
+        images: [],
+      });
+      Notify.warning("You didn't enter anything!");
+      return;
+    }
+
+    if (value === searchQuery) {
+      return;
+    }
+
+    this.setState({
+      loading: true,
+      searchQuery: value,
+      page: 1,
+      images: [],
     });
   };
 
-  timeout = () =>
-    setTimeout(() => {
-      window.scrollBy({
-        top: 1000,
-        behavior: 'smooth',
+  fetchImages = async () => {
+    const { searchQuery, page } = this.state;
+    try {
+
+      this.setState({
+        loading: true,
       });
-    }, 400);
+
+      if (searchQuery === '') {
+        return;
+      };
+
+      const data = await fetchApi(searchQuery, page);
+      // console.log(data.hits);
+
+      if (data.hits.length === 0) {
+        Notify.failure(
+          'Sorry, there are no images matching your search query. Please try again.'
+        );
+        return;
+      }
+
+      const imageData = data.hits.map(
+        ({ id, tags, webformatURL, largeImageURL }) => ({
+          id,
+          tags,
+          webformatURL,
+          largeImageURL,
+        })
+      );
+      
+      this.setState(prevState => ({
+        images: [...prevState.images, ...imageData],
+        totalPages: Math.ceil(data.total / 12),
+      }));
+      // console.log(this.state.totalPages, this.state.page);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      this.setState({
+        loading: false,
+      });
+    }
+  };
 
   loadMore = () => {
-    this.setState(prevState => ({ page: prevState.page + 1, isLoading: true }));
-  };
-  toggleModal = largeImg => {
-    if (this.state.modalImg === '') {
-      return this.setState({ modalHidden: false, modalImg: largeImg });
-    }
-    return this.setState({ modalHidden: true, modalImg: '' });
+    this.setState((prevState) => ({
+    page: prevState.page + 1
+  }));    
   };
 
-  componentDidUpdate(prevProps, prevState) {
-    if (
-      prevState.page !== this.state.page ||
-      prevState.queue !== this.state.queue
-    ) {
-      this.setState({ loaderHidden: false });
-      axios
-        .get(URI, {
-          params: {
-            q: this.state.queue,
-            page: this.state.page,
-            key: API_KEY,
-            image_type: 'photo',
-            orientation: 'horizontal',
-            per_page: 12,
-          },
-        })
-        .then(response => {
-          if (response.data.totalHits !== 0 && this.state.totalHits === 0) {
-            Notiflix.Notify.success(
-              `Hooray! We found ${response.data.totalHits} images.`,
-              notiflixOptions
-            );
-          }
+  toggle = () => {
+    this.setState(({ showModal }) => ({ showModal: !showModal }));
+  };
 
-          if (this.state.hits.length < response.data.totalHits) {
-            let data = response.data.hits.map(item => {
-              let data = {
-                id: item.id,
-                webformatURL: item.webformatURL,
-                largeImageURL: item.largeImageURL,
-              };
-              return data;
-            });
-            this.setState(prevState => ({
-              totalHits: response.data.totalHits,
-              hits: [...prevState.hits, ...data],
-            }));
-          } else {
-            throw new Error('Oops');
-          }
-        })
-        .then(async () => {
-          if (this.state.hits.length > 0) {
-            this.timeout();
-          }
-          await clearTimeout(this.timeout);
-        })
-        .catch(error => {
-          console.log(error);
-          return Notiflix.Notify.failure(
-            'Oops something goes wrong, change your request or refresh page',
-            notiflixOptions
-          );
-        })
-        .then(() => {
-          this.setState({ loaderHidden: true, isLoading: false });
-        });
-    }
-    return;
+  openModal = (id) => {
+    const imageModalData = this.state.images.find(image => image.id === id);
+    const largeImage = imageModalData.largeImageURL;
+    const imageTags = imageModalData.tags;
+  
+    this.setState({
+      modalImage: largeImage,
+      modalImageTags: imageTags,
+    });
+    this.toggle();
   }
 
   render() {
+
+    const { images, loading, totalPages, page, showModal, modalImage, modalImageTags } = this.state;
+    const imagesExist = images.length !== 0;
+    const isNotLastPage = page < totalPages;
+
     return (
       <AppBox>
-        <SearchBar onSubmit={this.getRequest} />
-        {this.state.hits.length !== 0 && (
-          <ImageGallery
-            data={this.state.hits}
-            toggleModal={this.toggleModal}
-            isModalOpen={this.state.modalHidden}
-          />
-        )}
-        {!this.state.loaderHidden && <Loader />}
-        {this.state.hits.length < this.state.totalHits && (
-          <Button onClick={this.loadMore} loading={this.state.isLoading} />
-        )}
-        {!this.state.modalHidden && (
-          <Modal onClose={this.toggleModal}>
-            <img src={this.state.modalImg} alt="" />
-          </Modal>
-        )}
+          <Searchbar onSubmit={this.handleSearchQuery} />
+          {imagesExist && <ImageGallery images={images} loadMore={this.loadMore} onImageClick={this.openModal} />}
+          {loading ? (<Loader />) : (imagesExist && isNotLastPage && <Button onClick={this.loadMore} />)}
+          {showModal && (
+              <Modal onMClose={this.toggle} largeImage={modalImage} tags={modalImageTags} />
+          )}
+           
       </AppBox>
     );
   }
-}
+
+  
+};

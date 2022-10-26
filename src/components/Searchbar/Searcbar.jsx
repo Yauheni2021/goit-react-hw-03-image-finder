@@ -1,55 +1,46 @@
-import propTypes from 'prop-types';
-import { Component } from 'react';
-import {
-  SearchBarBox,
-  SearchBarForm,
-  SearchBarButton,
-  SearchBarInput,
-} from './Searchbar.styled';
-import { BsSearch } from 'react-icons/bs';
+import { Component } from "react";
+import PropTypes from 'prop-types';
+import { SearchbarStyle, SearchForm, Button, ButtonLabel, Input } from "./Searchbar.styled";
 
-const INIT_VALUES = {
-  queue: '',
-};
+export class Searchbar extends Component {
 
-export class SearchBar extends Component {
-  state = { ...INIT_VALUES };
-
-  static propTypes = {
-    onSubmit: propTypes.func.isRequired,
-  };
-
-  handleChange = e => {
-    const { value } = e.target;
-    this.setState({ queue: value });
+    static PropType = {
+        onSubmit: PropTypes.func.isRequired,
+        onChange: PropTypes.func.isRequired,
     };
+
+    state = {
+        inputText: '',
+    }
+
+    handleInputText = event => {
+        this.setState({
+            inputText: event.target.value.trim(),
+        });
+      };
     
-  handleSubmit = e => {
-    const { onSubmit } = this.props;
-    e.preventDefault();
-    onSubmit({ ...this.state });
-  };
-
-
-  render() {
-    const { queue } = this.state;
-    return (
-      <SearchBarBox>
-        <SearchBarForm onSubmit={this.handleSubmit}>
-          <SearchBarButton type="submit">
-            <BsSearch />
-          </SearchBarButton>
-          <SearchBarInput
-            type="text"
-            name="SearchBar"
-            autoComplete="off"
-            autoFocus
-            value={queue}
-            onChange={this.handleChange}
-            placeholder="Search images and photos"
-          />
-        </SearchBarForm>
-      </SearchBarBox>
-    );
-  }
+    handleSubmit = event => {
+        event.preventDefault();
+        this.props.onSubmit(this.state.inputText);
+      };
+    
+    render() {
+        return (
+            <SearchbarStyle>
+                <SearchForm onSubmit={this.handleSubmit}>
+                    <Button type="submit">
+                    <ButtonLabel>Search</ButtonLabel>
+                    </Button>
+    
+                    <Input
+                    type="text"
+                    // autocomplete="off"
+                    // autofocus
+                    placeholder="Search images and photos"
+                    onChange={this.handleInputText}
+                    />
+                </SearchForm>
+            </SearchbarStyle>
+        )
+    }
 }

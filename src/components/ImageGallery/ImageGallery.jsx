@@ -1,32 +1,24 @@
-import propTypes from 'prop-types';
-import { ImageGalleryItem } from '../ImageGalleryItem/ImageGalleryItem';
-import { ImageGalleryBox } from './ImageGallery.styled';
+import PropTypes from 'prop-types';
+import { ImageGalleryItem } from 'components/ImageGalleryItem/ImageGalleryItem';
+import { ImageGalleryStyle } from './ImageGallery.styled';
 
-export const ImageGallery = ({ data, toggleModal, isModalOpen }) => {
-  return (
-    <ImageGalleryBox>
-      {data.map(({ id, webformatURL, largeImageURL }) => {
-        return (
-          <ImageGalleryItem
-            key={id}
-            id={id}
-            webImg={webformatURL}
-            largeImg={largeImageURL}
-            toggleModal={toggleModal}
-            isModalOpen={isModalOpen}
-          />
-        );
-      })}
-    </ImageGalleryBox>
-  );
-};
+export const ImageGallery = ({ images, onImageClick }) => {
+    return (
+      <ImageGalleryStyle>
+        {images.map(({ id, tags, webformatURL }) => {
+          return <ImageGalleryItem key={id} idImage={id} smallImage={webformatURL} tags={tags} onImageClick={onImageClick} />;
+        })}
+      </ImageGalleryStyle>
+    );
+  };
 
 ImageGallery.propTypes = {
-  data: propTypes.arrayOf(
-    propTypes.shape({
-      id: propTypes.number.isRequired,
-      webformatURL: propTypes.string.isRequired,
-      largeImageURL: propTypes.string.isRequired,
-    }).isRequired
-  ).isRequired,
-};
+    images: PropTypes.arrayOf(
+        PropTypes.shape({
+            id: PropTypes.number.isRequired,
+            tags: PropTypes.string.isRequired,
+            webformatURL: PropTypes.string.isRequired,
+        }),
+    ),
+    onImageClick: PropTypes.func.isRequired,
+}
