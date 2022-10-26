@@ -1,13 +1,13 @@
 {
   "files": {
-    "main.css": "/Yauheni2021.github.io/goit-react-hw-03-image-finder/static/css/main.c3469eba.css",
-    "main.js": "/Yauheni2021.github.io/goit-react-hw-03-image-finder/static/js/main.e958c34d.js",
-    "index.html": "/Yauheni2021.github.io/goit-react-hw-03-image-finder/index.html",
-    "main.c3469eba.css.map": "/Yauheni2021.github.io/goit-react-hw-03-image-finder/static/css/main.c3469eba.css.map",
-    "main.e958c34d.js.map": "/Yauheni2021.github.io/goit-react-hw-03-image-finder/static/js/main.e958c34d.js.map"
+    "main.css": "/goit-react-hw-03-image-finder/static/css/main.c3469eba.css",
+    "main.js": "/goit-react-hw-03-image-finder/static/js/main.aed1200e.js",
+    "index.html": "/goit-react-hw-03-image-finder/index.html",
+    "main.c3469eba.css.map": "/goit-react-hw-03-image-finder/static/css/main.c3469eba.css.map",
+    "main.aed1200e.js.map": "/goit-react-hw-03-image-finder/static/js/main.aed1200e.js.map"
   },
   "entrypoints": [
     "static/css/main.c3469eba.css",
-    "static/js/main.e958c34d.js"
+    "static/js/main.aed1200e.js"
   ]
 }
