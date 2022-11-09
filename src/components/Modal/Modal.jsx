@@ -24,24 +24,19 @@ export class Modal extends Component {
         if (e.code === 'Escape') {
             this.props.onMClose();
         }
-    };
-
-    render() {
-
-        const { largeImage, tags } = this.props;
-
-        return createPortal(
-          <Overlay onClick={this.onClose}>
-            <ModalStyle>
-              <img src={largeImage} alt={tags} />;
-            </ModalStyle>
-          </Overlay>,
-          modalRoot,
-        );
-      }
+  };
+  
+  render() {
+    return createPortal(
+      <Overlay onClick={this.onClose}>
+        <ModalStyle>{ this.props.children}</ModalStyle>
+      </Overlay>,
+      modalRoot,
+    )
+  }
 }
 
+
 Modal.propTypes = {
-    largeImage: PropTypes.string.isRequired,
-    tags: PropTypes.string.isRequired,
-};
+  onClose: PropTypes.func.isRequired,
+}
