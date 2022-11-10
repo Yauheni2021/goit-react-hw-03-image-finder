@@ -1,11 +1,11 @@
-import { AppBox } from './App.styled';
+import { Box } from './Box';
 import { Component } from 'react';
 import { fetchApi } from '../services/getApi';
 import { Searchbar } from './Searchbar/Searcbar';
 import { ImageGallery } from './ImageGallery/ImageGallery';
 import { Loader } from './Loader/Loader';
 import { Button } from './Button/Button';
-// import { AppBox } from './App.styled';
+
 import { Modal } from './Modal/Modal';
 import { Notify } from "notiflix";
 
@@ -131,7 +131,7 @@ export class App extends Component {
     const isNotLastPage = page < totalPages;
 
     return (
-      <AppBox>
+      <Box display="grid" gridTemplateColumns="1fr" gridGap="16px" pb="24px">
           <Searchbar onSubmit={this.handleSearchQuery} />
           {imagesExist && <ImageGallery images={images} loadMore={this.loadMore} onImageClick={this.openModal} />}
           {loading ? (<Loader />) : (imagesExist && isNotLastPage && <Button onClick={this.loadMore} />)}
@@ -139,7 +139,7 @@ export class App extends Component {
               <Modal onMClose={this.toggle} largeImage={modalImage} tags={modalImageTags} />
           )}
            
-      </AppBox>
+      </Box>
     );
   }
 
